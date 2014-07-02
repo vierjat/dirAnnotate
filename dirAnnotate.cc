@@ -21,7 +21,7 @@ struct dir_t{
   int totsubd;
   int nFits;
   string readme;
-  dir_t(const char* dirName, int l):name(dirName),level(l),nFits(0),readme(""),totsubd(0){};
+  dir_t(const char* dirName, int l):name(dirName),level(l),totsubd(0),nFits(0),readme(""){};
 };
 
 
@@ -111,7 +111,7 @@ void listFiles(string baseDir, int depth, dir_t &dir)
                   }
                   if(len > 7){
                     const char *last_seven = dirp->d_name + (len-7);
-                    if(strcmp(last_seven, "fits.gz") == 0){
+                    if(strcmp(last_seven, "fits.fz") == 0){
                       dir.nFits++;
                     }
                   }
