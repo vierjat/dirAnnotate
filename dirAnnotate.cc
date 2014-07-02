@@ -19,8 +19,9 @@ struct dir_t{
   string name;
   int level;
   int totsubd;
+  int nFits;
   string readme;
-  dir_t(const char* dirName, int l):name(dirName),level(l),readme(""),totsubd(0){};
+  dir_t(const char* dirName, int l):name(dirName),level(l),nFits(0),readme(""),totsubd(0){};
 };
 
 
@@ -35,6 +36,9 @@ void printTable(const dir_t d){
     cout  << "{background:yellow}.";
   }
   cout << "*" << d.name << "*";
+  if(d.nFits>0){
+    cout  << " #fits:" << d.nFits;
+  }
   if(d.readme.size()>1) cout << " " << d.readme;
   if(d.subdirs.size()==0){
     cout  << "|" << endl;
@@ -95,7 +99,24 @@ void listFiles(string baseDir, int depth, dir_t &dir)
                     sort(subdir.subdirs.begin(), subdir.subdirs.end());
                     dir.totsubd += subdir.totsubd;
                     dir.subdirs.push_back(subdir);
-                } else {
+                }
+                else {
+                  
+                  int len = strlen(dirp->d_name);
+                  if(len > 4){
+                    const char *last_three = dirp->d_name + (len-4);
+                    if(strcmp(last_three, "fits") == 0){
+                      dir.nFits++;
+                    }
+                  }
+                  if(len > 7){
+                    const char *last_seven = dirp->d_name + (len-7);
+                    if(strcmp(last_seven, "fits.gz") == 0){
+                      dir.nFits++;
+                    }
+                  }
+                  
+                  
                   if(strcmp(dirp->d_name, "README") == 0){
                     cout << "[FILE]\t" << depth << " " << dirp->d_name << endl;
                     std::ifstream t((baseDir + dirp->d_name).c_str());
