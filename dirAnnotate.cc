@@ -92,6 +92,12 @@ void listFiles(string baseDir, int depth, dir_t &dir)
         while ((dirp = readdir(dp)) != NULL) {
             if (dirp->d_name[0] != '.') {
                 if (isDir(baseDir + dirp->d_name) == true) {
+
+                    if(strcmp(dirp->d_name, "stats") == 0)
+                      continue;
+                    if(strcmp(dirp->d_name, "blank") == 0)
+                      continue;
+
                     subDirFound = true;
                     
                     dir_t subdir(dirp->d_name,depth+1);
