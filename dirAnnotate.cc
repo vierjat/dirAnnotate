@@ -129,7 +129,7 @@ void listFiles(string baseDir, int depth, dir_t &dir)
                   }
                   
                   if(strcmp(dirp->d_name, "README") == 0){
-                    cout << "[FILE]\t" << depth << " " << dirp->d_name << endl;
+//                     cout << "[FILE]\t" << depth << " " << dirp->d_name << endl;
                     
                     //Read README file and replace newline chars with spaces
                     std::ifstream t((baseDir + dirp->d_name).c_str());
@@ -153,20 +153,18 @@ int main(int argc, char *argv[])
       cout << "[WARNING] At least one argument ( path ) expected .. exiting." << endl;
       return 1;
     } else {
-      dir_t baseDir(argv[1],0);
-      listFiles(argv[1], 0, baseDir);
-      sort(baseDir.subdirs.begin(), baseDir.subdirs.end());
+      
+      vector<std::string> argsv(argv + 1, argv + argc);
+      sort(argsv.begin(), argsv.end());
       
       cout << endl;
-//       cout << baseDir;
-      
-      printTable(baseDir);
-//       for(unsigned int i=0; i<baseDir.subdirs.size(); ++i){
-//         cout << baseDir.subdirs[i] << endl;
-//         for(unsigned int j=0; j<baseDir.subdirs[i].subdirs.size(); ++j){
-//           cout << baseDir.subdirs[i].subdirs[j] << endl;
-//         }
-//       }
+      for(unsigned int i=0; i<argsv.size(); ++i){
+        dir_t baseDir(argsv[i].c_str(),0);
+        listFiles(argsv[i], 0, baseDir);
+        sort(baseDir.subdirs.begin(), baseDir.subdirs.end());
+        printTable(baseDir);
+      }
+      cout << endl;
       
     }
     
