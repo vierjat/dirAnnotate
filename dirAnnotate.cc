@@ -20,8 +20,9 @@ struct dir_t{
   int level;
   int totsubd;
   int nFits;
+  bool hasBlanks;
   string readme;
-  dir_t(const char* dirName, int l):name(dirName),level(l),totsubd(0),nFits(0),readme(""){};
+  dir_t(const char* dirName, int l):name(dirName),level(l),totsubd(0),nFits(0),hasBlanks(false),readme(""){};
 };
 
 
@@ -33,13 +34,16 @@ void printTable(const dir_t d){
   }
   
   if(d.subdirs.size()==0){
-    cout  << "{background:yellow}.";
+    if(d.hasBlanks)
+      cout  << "{background:#afa}.";
+    else
+      cout  << "{background:#ff8}.";
   }
   cout << "*" << d.name << "*";
   if(d.nFits>0){
-    cout  << " #fits:" << d.nFits;
+    cout  << "\n*@#fits:" << d.nFits <<"@*";
   }
-  if(d.readme.size()>1) cout << " " << d.readme;
+  if(d.readme.size()>1) cout << "\n" << d.readme;
   if(d.subdirs.size()==0){
     cout  << "|" << endl;
   }
@@ -95,8 +99,10 @@ void listFiles(string baseDir, int depth, dir_t &dir)
 
                     if(strcmp(dirp->d_name, "stats") == 0)
                       continue;
-                    if(strcmp(dirp->d_name, "blank") == 0)
+                    if(strcmp(dirp->d_name, "blank") == 0){
+                      dir.hasBlanks = true;
                       continue;
+                    }
 
                     subDirFound = true;
                     
@@ -122,14 +128,14 @@ void listFiles(string baseDir, int depth, dir_t &dir)
                     }
                   }
                   
-                  
                   if(strcmp(dirp->d_name, "README") == 0){
                     cout << "[FILE]\t" << depth << " " << dirp->d_name << endl;
+                    
+                    //Read README file and replace newline chars with spaces
                     std::ifstream t((baseDir + dirp->d_name).c_str());
                     std::stringstream buffer;
                     buffer << t.rdbuf();
                     t.close();
-                    
                     dir.readme = buffer.str();
                     std::replace( dir.readme.begin(), dir.readme.end(), '\n', ' ');
                   }
