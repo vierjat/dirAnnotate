@@ -13,6 +13,24 @@
 
 using namespace std;
 
+bool BothAreSpaces(char lhs, char rhs) { return (lhs == rhs) && (lhs == ' '); }
+
+// trim from start
+static inline std::string &ltrim(std::string &s) {
+        s.erase(s.begin(), std::find_if(s.begin(), s.end(), std::not1(std::ptr_fun<int, int>(std::isspace))));
+        return s;
+}
+
+// trim from end
+static inline std::string &rtrim(std::string &s) {
+        s.erase(std::find_if(s.rbegin(), s.rend(), std::not1(std::ptr_fun<int, int>(std::isspace))).base(), s.end());
+        return s;
+}
+
+// trim from both ends
+static inline std::string &trim(std::string &s) {
+        return ltrim(rtrim(s));
+}
 
 struct dir_t{
   vector<dir_t> subdirs;
@@ -138,6 +156,19 @@ void listFiles(string baseDir, int depth, dir_t &dir)
                     t.close();
                     dir.readme = buffer.str();
                     std::replace( dir.readme.begin(), dir.readme.end(), '\n', ' ');
+                    std::string::iterator new_end = std::unique(dir.readme.begin(), dir.readme.end(), BothAreSpaces);
+                    dir.readme.erase(new_end, dir.readme.end());
+                    trim(dir.readme);
+                    
+                    const unsigned int kWL = 25;
+                    for(unsigned int m=kWL; m<dir.readme.size(); ++m){
+                      if(dir.readme[m] == ' '){
+                        dir.readme[m] = '\n';
+                        m += kWL;
+                        if(m >= dir.readme.size()) break;
+                      }
+                    }
+                    
                   }
                 }
             }
