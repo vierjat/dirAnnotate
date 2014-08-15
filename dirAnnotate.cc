@@ -2,6 +2,9 @@
 #include <string>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <time.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -38,9 +41,11 @@ struct dir_t{
   int level;
   int totsubd;
   int nFits;
+  time_t youngestFile;
+  time_t oldestFile;
   bool hasBlanks;
   string readme;
-  dir_t(const char* dirName, int l):name(dirName),level(l),totsubd(0),nFits(0),hasBlanks(false),readme(""){};
+  dir_t(const char* dirName, int l):name(dirName),level(l),totsubd(0),nFits(0),youngestFile(-1),oldestFile(-1),hasBlanks(false),readme(""){};
 };
 
 
@@ -60,6 +65,15 @@ void printTable(const dir_t d){
   cout << "*" << d.name << "*";
   if(d.nFits>0){
     cout  << "\n*@#fits:" << d.nFits <<"@*";
+
+    struct tm *timeinfo = localtime (&d.youngestFile);
+    char buffer[80];
+    strftime (buffer,80,"%m/%d/%y",timeinfo);
+    cout  << "\n*@newest:" << buffer << "@*";
+
+    timeinfo = localtime (&d.oldestFile);
+    strftime (buffer,80,"%m/%d/%y",timeinfo);
+    cout  << "\n*@oldest:" << buffer << "@*";
   }
   if(d.readme.size()>1) cout << "\n" << d.readme;
   if(d.subdirs.size()==0){
@@ -136,12 +150,45 @@ void listFiles(string baseDir, int depth, dir_t &dir)
                   if(len > 4){
                     const char *last_three = dirp->d_name + (len-4);
                     if(strcmp(last_three, "fits") == 0){
+
+                      struct stat direntStat;
+                      stat ((baseDir+dirp->d_name).c_str(), &direntStat);
+                      time_t accessTime = direntStat.st_mtime;
+                      if (dir.oldestFile==-1)
+                      {
+                        dir.oldestFile=accessTime;
+                        dir.youngestFile=accessTime;
+                      }
+                      if (accessTime>dir.oldestFile)
+                      {
+                        dir.oldestFile = accessTime;
+                      }
+                      if (accessTime<dir.youngestFile)
+                      {
+                        dir.youngestFile = accessTime;
+                      }
                       dir.nFits++;
                     }
                   }
                   if(len > 7){
                     const char *last_seven = dirp->d_name + (len-7);
                     if(strcmp(last_seven, "fits.fz") == 0){
+                                            struct stat direntStat;
+                      stat ((baseDir+dirp->d_name).c_str(), &direntStat);
+                      time_t accessTime = direntStat.st_mtime;
+                      if (dir.oldestFile==-1)
+                      {
+                        dir.oldestFile=accessTime;
+                        dir.youngestFile=accessTime;
+                      }
+                      if (accessTime>dir.oldestFile)
+                      {
+                        dir.oldestFile = accessTime;
+                      }
+                      if (accessTime<dir.youngestFile)
+                      {
+                        dir.youngestFile = accessTime;
+                      }
                       dir.nFits++;
                     }
                   }
