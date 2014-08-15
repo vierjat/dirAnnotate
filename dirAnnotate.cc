@@ -159,11 +159,11 @@ void listFiles(string baseDir, int depth, dir_t &dir)
                         dir.oldestFile=accessTime;
                         dir.youngestFile=accessTime;
                       }
-                      if (accessTime>dir.oldestFile)
+                      if (accessTime<dir.oldestFile)
                       {
                         dir.oldestFile = accessTime;
                       }
-                      if (accessTime<dir.youngestFile)
+                      if (accessTime>dir.youngestFile)
                       {
                         dir.youngestFile = accessTime;
                       }
@@ -181,11 +181,11 @@ void listFiles(string baseDir, int depth, dir_t &dir)
                         dir.oldestFile=accessTime;
                         dir.youngestFile=accessTime;
                       }
-                      if (accessTime>dir.oldestFile)
+                      if (accessTime<dir.oldestFile)
                       {
                         dir.oldestFile = accessTime;
                       }
-                      if (accessTime<dir.youngestFile)
+                      if (accessTime>dir.youngestFile)
                       {
                         dir.youngestFile = accessTime;
                       }
