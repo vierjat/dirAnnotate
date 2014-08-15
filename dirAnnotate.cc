@@ -64,7 +64,7 @@ void printTable(const dir_t d){
   }
   cout << "*" << d.name << "*";
   if(d.nFits>0){
-    cout  << "\n*@#fits:" << d.nFits <<"@*";
+    cout  << "\n*@#fits: " << d.nFits <<"@*";
 
     struct tm *timeinfo = localtime (&d.youngestFile);
     char buffer[80];
